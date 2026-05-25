@@ -2,13 +2,15 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 
 const apiUrl = 'http://localhost:3001/api/citas';
+const estadoOptions = ['asignada', 'disponible', 'atendida'];
 
 function App() {
   const [form, setForm] = React.useState({
     nombre: '',
     apellidos: '',
     hora: '',
-    barbero: ''
+    barbero: '',
+    estado: 'asignada'
   });
   const [citas, setCitas] = React.useState([]);
   const [mensaje, setMensaje] = React.useState('');
@@ -35,7 +37,7 @@ function App() {
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...form, estado: 'asignada' })
+      body: JSON.stringify(form)
     });
 
     if (!response.ok) {
@@ -59,6 +61,11 @@ function App() {
           <input name="apellidos" placeholder="Apellidos" value={form.apellidos} onChange={manejarCambio} style={styles.input} />
           <input name="hora" placeholder="Hora de la cita" value={form.hora} onChange={manejarCambio} style={styles.input} />
           <input name="barbero" placeholder="Nombre del barbero" value={form.barbero} onChange={manejarCambio} style={styles.input} />
+          <select name="estado" value={form.estado} onChange={manejarCambio} style={styles.input}>
+            {estadoOptions.map((estado) => (
+              <option key={estado} value={estado}>{estado}</option>
+            ))}
+          </select>
           <button type="submit" style={styles.button}>Asignar cita</button>
         </form>
 
@@ -68,11 +75,33 @@ function App() {
           <h2 style={styles.sectionTitle}>Citas programadas</h2>
           <div style={styles.list}>
             {citas.map((cita) => (
-              <article key={cita._id} style={styles.item}>
+              <article key={cita.id} style={styles.item}>
                 <strong>{cita.nombre} {cita.apellidos}</strong>
                 <span>Hora: {cita.hora}</span>
-                <span>Estado: {cita.estado}</span>
+                <span style={{ ...styles.badge, ...styles["status_" + cita.estado] }}>Estado: {cita.estado}</span>
                 <span>Barbero: {cita.barbero}</span>
+                <select
+                  value={cita.estado}
+                  onChange={async (event) => {
+                    const nuevoEstado = event.target.value;
+                    const response = await fetch(`${apiUrl}/${cita.id}/estado`, {
+                      method: 'PATCH',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ estado: nuevoEstado })
+                    });
+
+                    if (response.ok) {
+                      await cargarCitas();
+                    } else {
+                      setMensaje('No se pudo actualizar el estado.');
+                    }
+                  }}
+                  style={styles.input}
+                >
+                  {estadoOptions.map((estadoOption) => (
+                    <option key={estadoOption} value={estadoOption}>{estadoOption}</option>
+                  ))}
+                </select>
               </article>
             ))}
           </div>
@@ -128,11 +157,28 @@ const styles = {
   },
   item: {
     display: 'grid',
-    gap: '4px',
+    gap: '10px',
     padding: '16px',
     borderRadius: '16px',
     background: '#f9fafb',
     border: '1px solid #e5e7eb'
+  },
+  badge: {
+    display: 'inline-flex',
+    padding: '6px 10px',
+    borderRadius: '999px',
+    color: '#111827',
+    fontSize: '0.9rem',
+    fontWeight: '600'
+  },
+  status_asignada: {
+    background: '#fde68a'
+  },
+  status_disponible: {
+    background: '#bfdbfe'
+  },
+  status_atendida: {
+    background: '#bbf7d0'
   }
 };
 
