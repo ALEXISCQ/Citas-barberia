@@ -30,6 +30,12 @@ MONGODB_URI=mongodb://127.0.0.1:27017/citas-barberia
 PORT=3001
 ```
 
+La configuración se carga desde `backend/.env` en `backend/app/core/config.py`, y la conexión a MongoDB se crea con `MONGODB_URI` durante el arranque del backend.
+
+Si MongoDB no está disponible en `127.0.0.1:27017`, el backend arranca igualmente con un almacenamiento en memoria para desarrollo y pruebas rápidas. Para persistencia real, debes levantar MongoDB local o apuntar `MONGODB_URI` a un servidor accesible.
+
+Además, el backend habilita CORS para `http://localhost:5173` y `http://127.0.0.1:5173`, que son los orígenes usados por Vite durante el desarrollo del frontend.
+
 ## Ejecución del Backend
 
 ### Instalación de dependencias

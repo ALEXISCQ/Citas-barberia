@@ -1,16 +1,24 @@
-import os
-from pydantic_settings import BaseSettings
+from pathlib import Path
+
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+BACKEND_ROOT = Path(__file__).resolve().parents[2]
 
 
 class Settings(BaseSettings):
-    mongodb_uri: str = os.getenv('MONGODB_URI', 'mongodb://127.0.0.1:27017/citas-barberia')
-    port: int = int(os.getenv('PORT', 3001))
+    model_config = SettingsConfigDict(
+        env_file=BACKEND_ROOT / '.env',
+        env_file_encoding='utf-8',
+        case_sensitive=False,
+        extra='ignore',
+    )
+
+    mongodb_uri: str = Field(default='mongodb://127.0.0.1:27017/citas-barberia', validation_alias='MONGODB_URI')
+    port: int = Field(default=3001, validation_alias='PORT')
     database_name: str = 'citas-barberia'
     collection_name: str = 'citas'
-
-    class Config:
-        env_file = '.env'
-        case_sensitive = False
 
 
 settings = Settings()
