@@ -43,6 +43,41 @@ export const styles = {
     marginBottom: '16px',
     color: '#4b5563'
   },
+  statusGroups: {
+    display: 'grid',
+    gap: '16px'
+  },
+  statusGroup: {
+    padding: '16px',
+    border: '1px solid #e5e7eb',
+    borderRadius: '14px',
+    background: '#ffffff'
+  },
+  statusHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: '8px'
+  },
+  statusTitle: {
+    margin: 0,
+    fontSize: '1.05rem'
+  },
+  statusDescription: {
+    marginTop: '8px',
+    marginBottom: '12px',
+    color: '#4b5563'
+  },
+  countBadge: {
+    display: 'inline-flex',
+    minWidth: '28px',
+    height: '28px',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: '999px',
+    fontWeight: '700',
+    color: '#111827'
+  },
   list: {
     display: 'grid',
     gap: '12px'
@@ -54,6 +89,11 @@ export const styles = {
     border: '1px dashed #d1d5db',
     color: '#6b7280',
     background: '#f9fafb'
+  },
+  emptyByStatus: {
+    margin: 0,
+    color: '#6b7280',
+    fontSize: '0.95rem'
   },
   item: {
     display: 'grid',
@@ -79,5 +119,14 @@ export const styles = {
   },
   status_atendida: {
     background: '#bbf7d0'
+  },
+  item_disponible: {
+    borderLeft: '5px solid #2563eb'
+  },
+  item_asignada: {
+    borderLeft: '5px solid #d97706'
+  },
+  item_atendida: {
+    borderLeft: '5px solid #16a34a'
   }
 };
