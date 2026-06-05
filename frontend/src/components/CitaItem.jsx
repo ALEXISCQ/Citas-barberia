@@ -1,6 +1,6 @@
 function CitaItem({ cita, onCambiarEstado, estadoOptions, styles }) {
   return (
-    <article style={styles.item}>
+    <article style={{ ...styles.item, ...styles['item_' + cita.estado] }}>
       <strong>{cita.nombre} {cita.apellidos}</strong>
       <span>Hora: {cita.hora}</span>
       <span style={{ ...styles.badge, ...styles['status_' + cita.estado] }}>Estado: {cita.estado}</span>
