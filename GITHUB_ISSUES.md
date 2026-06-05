@@ -143,3 +143,61 @@ Hacer una revisión final del repositorio antes de subirlo a GitHub.
 - La estructura está ordenada.
 - El README y CLAUDE.md están actualizados.
 - El proyecto se entiende al abrir el repositorio.
+
+## 12 Crear componente `BarberosTable`
+**Prioridad:** Alta  
+**Tipo:** Frontend / UI
+
+**Descripción:**
+Crear un componente React separado `BarberosTable` que muestre la lista de barberos desde la API. Permitir acciones básicas: crear, editar y eliminar barberos.
+
+**Criterios de aceptación:**
+- El componente está en `frontend/src/components/BarberosTable.jsx`.
+- Consume `GET /api/barberos` y renderiza una tabla.
+- Tiene botones para agregar/editar/eliminar (las acciones pueden abrir formularios modal).
+
+## 13 Crear componente `AgendaBarbero`
+**Prioridad:** Alta  
+**Tipo:** Frontend / UI
+
+**Descripción:**
+Crear un componente `AgendaBarbero` donde cada barbero pueda programar su agenda (fechas/horarios disponibles). Debe integrarse con la tabla de barberos y permitir gestionar franjas horarias.
+
+**Criterios de aceptación:**
+- El componente está en `frontend/src/components/AgendaBarbero.jsx`.
+- Permite seleccionar un barbero y añadir/quitar franjas horarias.
+- Guarda los cambios mediante `POST/PUT /api/agendas`.
+
+## 14 Backend: añadir colección `barberos` y `agendas`
+**Prioridad:** Alta  
+**Tipo:** Backend / Datos
+
+**Descripción:**
+Añadir dos colecciones en MongoDB: `barberos` (datos del barbero) y `agendas` (franjas disponibles por barbero). Crear modelos/esquemas y migraciones si aplica.
+
+**Criterios de aceptación:**
+- Existe ruta para CRUD de `barberos` y `agendas` en `backend/app/api/`.
+- Los esquemas pydantic para `Barbero` y `Agenda` están definidos en `backend/app/schemas/`.
+
+### 15 Endpoint: obtener agendas disponibles para asignación
+**Prioridad:** Alta  
+**Tipo:** Backend / API
+
+**Descripción:**
+Implementar un endpoint `GET /api/agendas/disponibles?barbero_id=&fecha=` que devuelva sólo las franjas horarias libres (no asignadas) para la pantalla de asignación de citas.
+
+**Criterios de aceptación:**
+- El endpoint filtra correctamente por `barbero_id` y `fecha`.
+- Devuelve únicamente franjas no reservadas.
+
+### 16 Integrar frontend: cargar solo agendas disponibles en pantalla `Asignar`
+**Prioridad:** Alta  
+**Tipo:** Frontend / Integración
+
+**Descripción:**
+Modificar la pantalla de asignación de citas para que consulte el nuevo endpoint y muestre únicamente las franjas disponibles al momento de crear una cita.
+
+**Criterios de aceptación:**
+- La pantalla `Asignar` usa `GET /api/agendas/disponibles` antes de mostrar horas.
+- No aparecen franjas ya reservadas.
+
