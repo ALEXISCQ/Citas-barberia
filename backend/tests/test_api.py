@@ -1,5 +1,6 @@
 import pytest
-from httpx import AsyncClient
+from bson import ObjectId
+from httpx import AsyncClient, ASGITransport
 from backend.app.main import app
 
 
@@ -12,8 +13,9 @@ class DummyCollection:
             self.inserted_id = inserted_id
 
     async def insert_one(self, document):
-        self.stored.append(document)
-        return DummyCollection.InsertResult('dummy_id')
+        stored_document = {'_id': ObjectId(), **document}
+        self.stored.append(stored_document)
+        return DummyCollection.InsertResult(stored_document['_id'])
 
     def find(self):
         class Cursor:
@@ -46,7 +48,8 @@ class DummyCollection:
 
 @pytest.mark.asyncio
 async def test_health_endpoint():
-    async with AsyncClient(app=app, base_url='http://testserver') as client:
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url='http://testserver') as client:
         response = await client.get('/api/health')
         assert response.status_code == 200
         assert response.json() == {'ok': True}
@@ -55,9 +58,10 @@ async def test_health_endpoint():
 @pytest.mark.asyncio
 async def test_create_and_list_cita(monkeypatch):
     dummy = DummyCollection()
-    monkeypatch.setattr('backend.app.api.citas', 'get_citas_collection', lambda: dummy)
+    monkeypatch.setattr('backend.app.api.citas.get_citas_collection', lambda: dummy)
 
-    async with AsyncClient(app=app, base_url='http://testserver') as client:
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url='http://testserver') as client:
         response = await client.post(
             '/api/citas',
             json={
@@ -81,12 +85,14 @@ async def test_create_and_list_cita(monkeypatch):
 @pytest.mark.asyncio
 async def test_update_cita_estado(monkeypatch):
     dummy = DummyCollection()
-    dummy.stored.append({'_id': 'dummy_id', 'nombre': 'Ana', 'apellidos': 'Pérez', 'hora': '15:00', 'barbero': 'Juan', 'estado': 'asignada'})
-    monkeypatch.setattr('backend.app.api.citas', 'get_citas_collection', lambda: dummy)
+    cita_id = ObjectId()
+    dummy.stored.append({'_id': cita_id, 'nombre': 'Ana', 'apellidos': 'Pérez', 'hora': '15:00', 'barbero': 'Juan', 'estado': 'asignada'})
+    monkeypatch.setattr('backend.app.api.citas.get_citas_collection', lambda: dummy)
 
-    async with AsyncClient(app=app, base_url='http://testserver') as client:
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url='http://testserver') as client:
         response = await client.patch(
-            '/api/citas/dummy_id/estado',
+            f'/api/citas/{cita_id}/estado',
             json={'estado': 'atendida'}
         )
         assert response.status_code == 200
